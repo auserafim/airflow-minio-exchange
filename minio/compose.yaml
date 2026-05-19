@@ -1,0 +1,39 @@
+services:
+  minio:
+    build:
+      context: storage/
+      dockerfile: infra/Dockerfile
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minadmin
+      MINIO_ROOT_PASSWORD: minadmin
+      MINIO_NOTIFY_WEBHOOK_ENABLE_primary: on
+      MINIO_NOTIFY_WEBHOOK_ENDPOINT_primary: http://webhook:8001/webhook
+    volumes:
+      - minio_data:/data
+    networks:
+      - shared-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  webhook:
+    build:
+      context: webhook/
+      dockerfile: infra/Dockerfile
+    container_name: webhook_api
+    ports:
+      - "8001:8001"
+    networks:
+      - shared-net
+volumes:
+  minio_data:
+
+networks:
+  shared-net:
+    external: true
+    name: ml-network

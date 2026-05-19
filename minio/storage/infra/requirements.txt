@@ -1,0 +1,4 @@
+minio==7.2.7
+fastapi 
+uvicorn 
+httpx
