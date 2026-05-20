@@ -4,12 +4,11 @@ sys.path.append("/opt/airflow")
 
 from datetime import datetime
 
-from airflow.decorators import task
 from airflow.providers.standard.operators.empty import EmptyOperator
-from airflow.sdk import DAG, get_current_context
+from airflow.sdk import DAG, get_current_context, task
 
 with DAG(
-    dag_id="Main-Orchestration",
+    dag_id="mainorchestrator",
     description="Dag that will clean the datasets and make them available to training",
     start_date=datetime(2025, 1, 13),
     catchup=False,
@@ -33,7 +32,6 @@ with DAG(
         print(key)
         print(event_time)
         print(event_name)
-        print("things did not work")
 
     end = EmptyOperator(task_id="end")
 
