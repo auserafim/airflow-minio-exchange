@@ -1,4 +1,4 @@
 minio==7.2.7
-fastapi 
-uvicorn 
+fastapi
+uvicorn
 httpx

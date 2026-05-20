@@ -12,8 +12,6 @@ services:
       MINIO_ROOT_PASSWORD: minadmin
       MINIO_NOTIFY_WEBHOOK_ENABLE_primary: on
       MINIO_NOTIFY_WEBHOOK_ENDPOINT_primary: http://webhook:8001/webhook
-    volumes:
-      - minio_data:/data
     networks:
       - shared-net
     healthcheck:
@@ -21,6 +19,18 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  miniosdk:
+    build:
+      context: miniosdk/
+    container_name: miniosdk
+    volumes:
+      - ./miniosdk/data/:/app/data
+      - ./miniosdk/scripts/:/app/scripts
+    depends_on:
+      - minio
+    networks:
+      - shared-net
   webhook:
     build:
       context: webhook/
