@@ -26,6 +26,8 @@ services:
       context: webhook/
       dockerfile: infra/Dockerfile
     container_name: webhook_api
+    volumes:
+      - ./webhook/main.py:/app/main.py
     ports:
       - "8001:8001"
     networks:
