@@ -1,11 +1,16 @@
 import sys
 
+import requests
+
 sys.path.append("/opt/airflow")
 
 from datetime import datetime
 
 from airflow.providers.standard.operators.empty import EmptyOperator
 from airflow.sdk import DAG, get_current_context, task
+
+VALIDATION_URL = "http://validation:8002/validation"
+
 
 with DAG(
     dag_id="mainorchestrator",
@@ -33,6 +38,10 @@ with DAG(
         print(event_time)
         print(event_name)
 
+    @task(task_id="validation")
+    def run_validation():
+        requests.post(VALIDATION_URL)
+
     end = EmptyOperator(task_id="end")
 
-    start >> run_fetching_data() >> end
+    start >> run_fetching_data() >> run_validation() >> end
