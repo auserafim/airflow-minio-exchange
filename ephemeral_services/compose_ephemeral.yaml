@@ -1,0 +1,16 @@
+services:
+  validation:
+    build:
+      context: ./validation_service
+      dockerfile: infra/Dockerfile
+    container_name: validation_service
+    volumes:
+      - ./validation_service/scripts/:/app/scripts
+    networks:
+      - shared-net
+    ports:
+      - "8002:8002"
+networks:
+  shared-net:
+    external: true
+    name: ml-network

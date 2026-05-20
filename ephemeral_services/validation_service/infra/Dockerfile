@@ -6,5 +6,5 @@ COPY infra/requirements.txt .
 COPY scripts/ app/scripts/
 
 RUN pip install -r requirements.txt
-
-CMD ["tail" ,"-f" ,"/dev/null"]
+EXPOSE 8002
+CMD ["uvicorn", "scripts.api:app", "--host", "0.0.0.0", "--port", "8002"]
