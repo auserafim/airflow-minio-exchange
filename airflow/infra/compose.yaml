@@ -15,7 +15,6 @@ services:
     container_name: airflow-app
     volumes:
       - ../dags:/opt/airflow/dags
-      - ../preprocessing:/opt/airflow/preprocessing
     environment:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - PYTHONPATH=/opt/airflow

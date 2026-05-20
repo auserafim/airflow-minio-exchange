@@ -54,5 +54,6 @@ if __name__ == "__main__":
             raise RuntimeError(
                 "Could not add event to bucket Error",
             ) from e
+
     except S3Error as exc:
         print("error occured:", exc)

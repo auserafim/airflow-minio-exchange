@@ -23,6 +23,7 @@ services:
   miniosdk:
     build:
       context: miniosdk/
+      dockerfile: infra/Dockerfile
     container_name: miniosdk
     volumes:
       - ./miniosdk/data/:/app/data

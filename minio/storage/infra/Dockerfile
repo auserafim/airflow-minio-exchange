@@ -1,4 +1,4 @@
-from minio/minio:latest
+FROM minio/minio:latest
 
 WORKDIR /app
 
