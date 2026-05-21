@@ -16,25 +16,18 @@ if __name__ == "__main__":
     BUCKET = "superclient"
     TEMP_FOLDER_PATH = "/app/tmp"
     try:
-        client.fget_object(
-            BUCKET, "validated/validated.parquet", "/tmp/validated.parquet"
-        )
+        client.fget_object(BUCKET, "cleaned/cleaned.parquet", "/tmp/cleaned.parquet")
 
         if not os.path.exists(TEMP_FOLDER_PATH):
             os.makedirs(TEMP_FOLDER_PATH)
 
-        full_path_clean = os.path.join(TEMP_FOLDER_PATH, "cleaned.parquet")
+        full_path_clean = os.path.join(TEMP_FOLDER_PATH, "curated.parquet")
 
         with open(full_path_clean, "w") as filename:
             pass
 
         client.fput_object(
-            BUCKET, "cleaned/cleaned.parquet", f"{TEMP_FOLDER_PATH}/cleaned.parquet"
-        )
-        client.fput_object(
-            BUCKET,
-            "cleaned/cleaned.parquet",
-            f"{TEMP_FOLDER_PATH}/cleaned.parquet",
+            BUCKET, "curated/curated.parquet", f"{TEMP_FOLDER_PATH}/curated.parquet"
         )
     except Exception as e:
         raise e

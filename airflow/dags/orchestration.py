@@ -11,6 +11,8 @@ from airflow.sdk import DAG, get_current_context, task
 
 VALIDATION_URL = "http://validation:8002/validation"
 CLEANING_URL = "http://cleaning:8003/cleaning"
+ANALYTICS_URL = "http://analytics:8005/analytics"
+ENRICHMENT_URL = "http://enrichment:8004/enrichment"
 
 with DAG(
     dag_id="mainorchestrator",
@@ -23,7 +25,7 @@ with DAG(
 ) as dag:
     start = EmptyOperator(task_id="start")
 
-    @task(task_id="fetching_data")
+    @task(task_id="fetching")
     def run_fetching_data():
 
         context = get_current_context()
@@ -46,6 +48,22 @@ with DAG(
     def run_cleaning():
         requests.post(CLEANING_URL)
 
+    @task(task_id="enrichment")
+    def run_enrichment():
+        requests.post(ENRICHMENT_URL)
+
+    @task(task_id="analytics")
+    def run_analytics():
+        requests.post(ANALYTICS_URL)
+
     end = EmptyOperator(task_id="end")
 
-    start >> run_fetching_data() >> run_validation() >> run_cleaning() >> end
+    (
+        start
+        >> run_fetching_data()
+        >> run_validation()
+        >> run_cleaning()
+        >> run_enrichment()
+        >> run_analytics()
+        >> end
+    )

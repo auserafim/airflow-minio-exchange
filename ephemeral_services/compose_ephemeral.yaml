@@ -21,6 +21,28 @@ services:
       - shared-net
     ports:
       - "8003:8003"
+  enrichment:
+    build:
+      context: ./enrichment_service
+      dockerfile: infra/Dockerfile
+    container_name: enrichment_service
+    volumes:
+      - ./enrichment_service/scripts/:/app/scripts
+    networks:
+      - shared-net
+    ports:
+      - "8004:8004"
+  analytics:
+    build:
+      context: ./analytics_service
+      dockerfile: infra/Dockerfile
+    container_name: analytics_service
+    volumes:
+      - ./analytics_service/scripts/:/app/scripts
+    networks:
+      - shared-net
+    ports:
+      - "8005:8005"
 networks:
   shared-net:
     external: true
