@@ -6,4 +6,5 @@ COPY infra/requirements.txt .
 
 RUN pip install -r requirements.txt
 
-CMD ["tail" ,"-f" ,"/dev/null"]
+CMD ["python", "scripts/create_bucket.py"]
+# CMD ["tail", "-f", "/dev/null"]

@@ -29,7 +29,7 @@ services:
       - ./miniosdk/data/:/app/data
       - ./miniosdk/scripts/:/app/scripts
     depends_on:
-      - minio
+      - webhook
     networks:
       - shared-net
   webhook:
@@ -43,6 +43,8 @@ services:
       - "8001:8001"
     networks:
       - shared-net
+    depends_on:
+      - minio
 volumes:
   minio_data:
 
