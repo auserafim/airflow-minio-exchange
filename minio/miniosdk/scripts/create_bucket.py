@@ -1,16 +1,15 @@
+import os
 import time
 from mimetypes import suffix_map
 from sys import prefix
 
 from minio.error import S3Error
-from minio.notificationconfig import FilterRule, NotificationConfig, QueueConfig
+from minio.notificationconfig import NotificationConfig, PrefixFilterRule, QueueConfig
 from typing_extensions import Any
 
 from minio import Minio
 
-DATA_PATH = "../data"
-RAW = f"{DATA_PATH}/raw"
-PROCESSED = f"{DATA_PATH}/processed"
+DATA_PATH = "/app/data"
 
 
 def add_event_to_bucket(
@@ -21,7 +20,11 @@ def add_event_to_bucket(
         queue_config_list=[
             QueueConfig(
                 queue="arn:minio:sqs::primary:webhook",
-                events=["s3:ObjectCreated:Put"],
+                events=[
+                    "s3:ObjectCreated:*",
+                ],
+                # only triggers new data at raw, not every change in the whole bucket
+                prefix_filter_rule=PrefixFilterRule("raw/"),
             )
         ]
     )
@@ -34,19 +37,34 @@ if __name__ == "__main__":
         client = Minio(
             "minio:9000", access_key="minadmin", secret_key="minadmin", secure=False
         )
-        bucketList = ["processed", "raw"]
-        destinationFiles = ["processed.csv", "raw.csv"]
-        sourceFiles = [f"{PROCESSED}/processed.csv", f"{RAW}/raw.csv"]
+        bucketList = ["superclient"]
+        foldersToCreate = [
+            "raw",
+            "validated",
+            "quality",
+            "cleaned",
+            "curated",
+            "analytics",
+        ]
 
-        for b, d, f in zip(bucketList, destinationFiles, sourceFiles):
+        for b in bucketList:
             if not client.bucket_exists(b):
                 client.make_bucket(b)
-                client.fput_object(b, d, f)
-                print(f"Bucket created : {b}\nFile: {f} written to it.")
-                continue
-            print(f"Bucket {b} arealdy existed!")
+                for f in foldersToCreate:
+                    folder_path = f"{DATA_PATH}/{f}/"
+                    if not os.path.exists(folder_path):
+                        os.makedirs(folder_path)
 
-        # adding events to the bucket
+                    full_path = os.path.join(folder_path, ".minioignore")
+                    with open(full_path, "w") as filename:
+                        # filename.write("1")
+                        pass
+
+                    client.fput_object(
+                        b,
+                        f"{f}/.minioignore",
+                        f"{DATA_PATH}/{f}/.minioignore",
+                    )
         try:
             for c in bucketList:
                 add_event_to_bucket(c, client)
@@ -57,3 +75,32 @@ if __name__ == "__main__":
 
     except S3Error as exc:
         print("error occured:", exc)
+
+# if __name__ == "__main__":
+#     try:
+#         client = Minio(
+#             "minio:9000", access_key="minadmin", secret_key="minadmin", secure=False
+#         )
+#         bucketList = ["processed", "raw"]
+#         destinationFiles = ["processed.csv", "raw.csv"]
+#         sourceFiles = [f"{PROCESSED}/processed.csv", f"{RAW}/raw.csv"]
+
+#         for b, d, f in zip(bucketList, destinationFiles, sourceFiles):
+#             if not client.bucket_exists(b):
+#                 client.make_bucket(b)
+#                 client.fput_object(b, d, f)
+#                 print(f"Bucket created : {b}\nFile: {f} written to it.")
+#                 continue
+#             print(f"Bucket {b} arealdy existed!")
+
+#         # adding events to the bucket
+#         try:
+#             for c in bucketList:
+#                 add_event_to_bucket(c, client)
+#         except Exception as e:
+#             raise RuntimeError(
+#                 "Could not add event to bucket Error",
+#             ) from e
+
+#     except S3Error as exc:
+#         print("error occured:", exc)
