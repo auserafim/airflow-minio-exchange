@@ -3,4 +3,4 @@ run:
 build:
 	sudo docker compose -f infra/compose.yaml up -d --build
 down:
-	sudo docker compose -f infra/compose.yaml down --remove-orphans
+	sudo docker compose -f infra/compose.yaml down -v --remove-orphans

@@ -10,7 +10,7 @@ from airflow.providers.standard.operators.empty import EmptyOperator
 from airflow.sdk import DAG, get_current_context, task
 
 VALIDATION_URL = "http://validation:8002/validation"
-
+CLEANING_URL = "http://cleaning:8003/cleaning"
 
 with DAG(
     dag_id="mainorchestrator",
@@ -42,6 +42,10 @@ with DAG(
     def run_validation():
         requests.post(VALIDATION_URL)
 
+    @task(task_id="cleaning")
+    def run_cleaning():
+        requests.post(CLEANING_URL)
+
     end = EmptyOperator(task_id="end")
 
-    start >> run_fetching_data() >> run_validation() >> end
+    start >> run_fetching_data() >> run_validation() >> run_cleaning() >> end

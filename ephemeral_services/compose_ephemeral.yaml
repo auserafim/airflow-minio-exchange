@@ -10,6 +10,17 @@ services:
       - shared-net
     ports:
       - "8002:8002"
+  cleaning:
+    build:
+      context: ./cleaning_service
+      dockerfile: infra/Dockerfile
+    container_name: cleaning_service
+    volumes:
+      - ./cleaning_service/scripts/:/app/scripts
+    networks:
+      - shared-net
+    ports:
+      - "8003:8003"
 networks:
   shared-net:
     external: true
