@@ -54,12 +54,10 @@ if __name__ == "__main__":
                     folder_path = f"{DATA_PATH}/{f}/"
                     if not os.path.exists(folder_path):
                         os.makedirs(folder_path)
-
                     full_path = os.path.join(folder_path, ".minioignore")
                     with open(full_path, "w") as filename:
                         # filename.write("1")
                         pass
-
                     client.fput_object(
                         b,
                         f"{f}/.minioignore",
